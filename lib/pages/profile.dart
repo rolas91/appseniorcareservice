@@ -3,22 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:seniorcare/api/seniorcare_api.dart';
 import 'package:seniorcare/models/user.dart';
-import 'package:seniorcare/tabs/bottom/applied.dart';
-import 'package:seniorcare/tabs/bottom/awarded.dart';
-import 'package:seniorcare/tabs/bottom/open.dart';
 import 'package:seniorcare/utils/auth.dart';
 import 'package:seniorcare/utils/dialogs.dart';
 import 'package:seniorcare/utils/extras.dart';
 import 'package:seniorcare/widgets/avatar_button.dart';
-import 'package:seniorcare/widgets/side_drawer.dart';
 
-class HomePage extends StatefulWidget {
+class Profile extends StatefulWidget {
   static const routeName = 'home';
   @override
-  _HomePageState createState() => _HomePageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _HomePageState extends State<HomePage> with AfterLayoutMixin {
+class _ProfilePageState extends State<Profile> with AfterLayoutMixin {
   User user;
 
   @override
@@ -49,31 +45,37 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-            appBar: AppBar(
-              title: Text("Senior Care"),
-              bottom: TabBar(
-                tabs: [
-                  Tab(
-                    text: "Open",
-                    icon: Icon(Icons.receipt),
-                  ),
-                  Tab(
-                    text: "Applied",
-                    icon: Icon(Icons.check_box),
-                  ),
-                  Tab(
-                    text: "Awarded",
-                    icon: Icon(Icons.star),
+    return Scaffold(
+        body: SafeArea(
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: Column(
+          children: <Widget>[
+            this.user == null
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
                   )
-                ],
-              ),
+                : Column(
+                    children: <Widget>[
+                      AvatarButton(
+                        imageSize: 100,
+                        url: this.user.avatar,
+                        onPressed: this._pickImage,
+                      ),
+                      Text(this.user.username),
+                      Text(this.user.email),
+                      Text(this.user.date.toString()),
+                    ],
+                  ),
+            FlatButton(
+              child: Text("Log Out"),
+              onPressed: () => Auth.instance.logOut(context),
             ),
-            drawer: SideDrawer(),
-            body: TabBarView(
-              children: [Open(), Applied(), Awarded()],
-            )));
+          ],
+        ),
+      ),
+    ));
   }
 }
